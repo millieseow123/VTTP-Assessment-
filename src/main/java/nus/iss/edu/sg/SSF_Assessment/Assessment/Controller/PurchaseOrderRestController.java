@@ -46,24 +46,30 @@ public class PurchaseOrderRestController {
 
         double total = 0.0;
         Quotation quotation = null;
+        JsonObject object = null;
+        int quantity = 0;
         for (int i = 0; i < lineItems.size(); i++) {
-            JsonObject object = lineItems.getJsonObject(i);
+            object = lineItems.getJsonObject(i);
             item.add(object.getString("item"));
-            int quantity = object.getInt("quantity"); //qty of fruit
+            quantity = object.getInt("quantity"); //qty of fruit
 
-        
-        quotation = (QuotationSvc.getQuotations(item)).get(); 
+            quotation = (QuotationSvc.getQuotations(item)).get(); 
         for (int j = 0; j < item.size(); j++) {
             String nameOfFruit = item.get(j);// name of fruit
             float fruitPrice = quotation.getQuotation(nameOfFruit);// price of each fruit
-        for(int k=0; k<item.size(); k++){
-            float priceOfEachFruit = (quantity * fruitPrice);
-            total += priceOfEachFruit;
-        System.out.println("total " + total);   }      
-        }}
+        
+            if (nameOfFruit == object.getString("item")){
+                float priceOfEachFruit = (quantity * fruitPrice);
+                total =total + priceOfEachFruit;
+            }     
+        }
+
+        }
+        
+       
 
         JsonObject o = Json.createObjectBuilder()
-            .add("invoiceId:", quotation.getQuoteId())
+            .add("invoiceId", quotation.getQuoteId())
             .add("name", body.getString("name"))
             .add("total", total).build();
 
